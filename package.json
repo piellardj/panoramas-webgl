@@ -1,0 +1,31 @@
+{
+  "name": "panoramas-webg",
+  "version": "0.0.1",
+  "description": "Panorama viewer and editor",
+  "main": "build/index.js",
+  "scripts": {
+    "build-demo-js": "npm run tsc && npm run webpack",
+    "build-page-template": "node src/generate-page-template.js",
+    "build-shaders": "node src/build-shaders.js",
+    "copy-resources": "shx cp -r src/resources/* docs",
+    "build": "npm run build-page-template && npm run build-shaders && npm run build-demo-js && npm run copy-resources",
+    "rebuild": "npm run clean && npm run build",
+    "clean": "shx rm -rf build/ tmp/ docs/*",
+    "lint": "tslint -c src/config/tslint.json -p src/config/tsconfig.json",
+    "tsc": "tsc -p src/config/tsconfig.json",
+    "webpack": "webpack --config src/config/webpack.config.js"
+  },
+  "author": "“Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "fs-extra": "^7.0.1",
+    "shx": "^0.3.2",
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3",
+    "webpage-templates": "github:piellardj/webpage-templates"
+  }
+}
