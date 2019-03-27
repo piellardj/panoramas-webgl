@@ -2,7 +2,8 @@
     "title": "Panoramas",
     "description": "Simple panorama viewer and editor",
     "introduction": [
-        "This project is a simple tool for visualizing, editing and converting panoramas. It supports skysphere, skybox and tiny planet formats, and can convert from one to the other."
+        "This project is a simple tool for visualizing, editing and converting panoramas.",
+        "It supports skysphere, skybox and tiny planet formats, and can convert from one another."
     ],
     "githubProjectName": "panoramas-webgl",
     "additionalLinks": [],
