@@ -223,6 +223,11 @@ class Parameters {
     }
 }
 
+const css = document.createElement("style");
+css.type = "text/css";
+css.innerHTML = "canvas:active { cursor: grab; }";
+document.body.appendChild(css);
+
 export {
     Parameters,
 };
