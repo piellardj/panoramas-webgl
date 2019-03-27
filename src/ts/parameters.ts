@@ -2,6 +2,7 @@ import { Format, FormatUtils } from "./format-utils";
 
 declare const Canvas: any;
 declare const Checkbox: any;
+declare const Demopage: any;
 declare const FileControl: any;
 declare const Range: any;
 declare const Tabs: any;
@@ -124,13 +125,22 @@ class Parameters {
     }
 
     public static set image(img: HTMLImageElement) {
+        const ERROR_MESSAGE_ID = "invalid-image";
+
         image = img;
         image.addEventListener("load", () => {
+            Demopage.removeErrorMessage(ERROR_MESSAGE_ID);
             for (const callback of onImageLoadObservers) {
                 callback(image);
             }
 
             callOnChangeObservers();
+        });
+
+        image.addEventListener("error", () => {
+            Demopage.setErrorMessage(ERROR_MESSAGE_ID, "The image could not be loaded.");
+            Canvas.showLoader(false);
+            console.error("Image could not be loaded.");
         });
     }
     public static get image(): HTMLImageElement {

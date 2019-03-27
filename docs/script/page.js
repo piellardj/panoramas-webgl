@@ -6,13 +6,37 @@ const Demopage = (function() {
         console.error("Cannot find element '" + errorsBlockId + "'.");
     }
 
+    function getErrorById(id) {
+        return errorsBlock.querySelector("span[id=error-message-" + id +"]");
+    }
+
     return Object.freeze({
-        addErrorMessage: function(message) {
+        setErrorMessage: function(id, message) {
             if (errorsBlock) {
-                const span = document.createElement("span");
-                span.innerText = message;
-                errorsBlock.appendChild(span);
-                errorsBlock.appendChild(document.createElement("br"));
+                const span = getErrorById(id);
+                if (span) {
+                    span.innerHTML = message;
+                    return;
+                } else {
+                    const span = document.createElement("span");
+                    span.id = "error-message-" + id;
+                    span.innerText = message;
+                    errorsBlock.appendChild(span);
+                    errorsBlock.appendChild(document.createElement("br"));
+                }
+            }
+        },
+
+        removeErrorMessage: function(id) {
+            if (errorsBlock) {
+                const span = getErrorById(id);
+                if (span) {
+                    const br = span.nextElementSibling;
+                    if (br) {
+                        errorsBlock.removeChild(br);
+                    }
+                    errorsBlock.removeChild(span);
+                }
             }
         },
     });
