@@ -235,33 +235,96 @@ const Canvas = (function() {
             }
         });
 
-        let currentTouchId = null;
+        const currentTouches = [];
+        let currentDistance = 0; // for pinching management
+
         canvas.addEventListener("touchstart", function(event) {
-            if (currentTouchId === null) {
-                const touch = event.changedTouches[0];
-                currentTouchId = touch.identifier;
-                mouseDown(touch.clientX, touch.clientY);
+            const previousLength = currentTouches.length;
+
+            const touches = event.changedTouches;
+            for (let i = 0; i < touches.length; ++i) {
+                const touch = touches[i];
+                let alreadyRegistered = false;
+                for (let iC = 0; iC < currentTouches.length; ++iC) {
+                    if (touch.identifier === currentTouches[iC].id) {
+                        alreadyRegistered = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyRegistered) {
+                    currentTouches.push({
+                        id: touch.identifier,
+                        clientX: touch.clientX,
+                        clientY: touch.clientY,
+                    });
+                }
+            }
+
+            if (previousLength === 0 && currentTouches.length > 0) {
+                const currentTouch = currentTouches[0];
+                mouseDown(currentTouch.clientX, currentTouch.clientY);
+            } else if (currentTouches.length === 2) {
+                const mainTouch = currentTouches[0];
+                const secondTouch = currentTouches[1];
+                const dX = mainTouch.clientX - secondTouch.clientX;
+                const dY = mainTouch.clientY - secondTouch.clientY;
+                currentDistance = Math.sqrt(dX * dX + dY * dY);
             }
         }, false);
+
         window.addEventListener("touchend", function(event) {
             const touches = event.changedTouches;
             for (let i = 0; i < touches.length; ++i) {
-                if (touches[i].identifier === currentTouchId) {
-                    currentTouchId = null;
-                    mouseUp();
+                const touch = touches[i];
+                for (let iC = 0; iC < currentTouches.length; ++iC) {
+                    if (touch.identifier === currentTouches[iC].id) {
+                        currentTouches.splice(iC, 1);
+                        iC--;
+                    }
                 }
             }
+
+            if (currentTouches.length === 1) {
+                const newPos = clientToRelative(currentTouches[0].clientX,
+                    currentTouches[0].clientY);
+                lastMousePosition[0] = newPos[0];
+                lastMousePosition[1] = newPos[1];
+            } else if (currentTouches.length === 0) {
+                mouseUp();
+            }
         });
+
         window.addEventListener("touchmove", function(event) {
             const touches = event.changedTouches;
             for (let i = 0; i < touches.length; ++i) {
                 const touch = touches[i];
-                if (touch.identifier === currentTouchId) {
-                    if (isMouseDown) {
-                        event.preventDefault();
+                for (let iC = 0; iC < currentTouches.length; ++iC) {
+                    if (touch.identifier === currentTouches[iC].id) {
+                        currentTouches[iC].clientX = touch.clientX;
+                        currentTouches[iC].clientY = touch.clientY;
                     }
-                    mouseMove(touch.clientX, touch.clientY);
                 }
+            }
+
+            if (isMouseDown) {
+                event.preventDefault();
+            }
+
+            if (currentTouches.length === 1) {
+                mouseMove(currentTouches[0].clientX, currentTouches[0].clientY);
+            } else if (currentTouches.length === 2) {
+                const mainTouch = currentTouches[0];
+                const secondTouch = currentTouches[1];
+                const dX = mainTouch.clientX - secondTouch.clientX;
+                const dY = mainTouch.clientY - secondTouch.clientY;
+                const newDistance = Math.sqrt(dX * dX + dY * dY);
+
+                const dDistance = (currentDistance - newDistance);
+                const zoomFactor = dDistance / currentDistance;
+                currentDistance = newDistance;
+
+                callObservers(mouseWheelObservers, 5 * zoomFactor);
             }
         }, {passive: false});
     }
