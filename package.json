@@ -4,7 +4,7 @@
   "description": "Panorama viewer and editor",
   "main": "build/index.js",
   "scripts": {
-    "build-demo-js": "npm run tsc && npm run webpack",
+    "build-demo-js": "npm run tsc && npm run webpack && npm run webpack-production",
     "build-page-template": "node src/generate-page-template.js",
     "build-shaders": "node src/build-shaders.js",
     "copy-resources": "shx cp -r src/resources/* docs",
@@ -13,7 +13,8 @@
     "clean": "shx rm -rf build/ tmp/ docs/*",
     "lint": "tslint -c src/config/tslint.json -p src/config/tsconfig.json",
     "tsc": "tsc -p src/config/tsconfig.json",
-    "webpack": "webpack --config src/config/webpack.config.js"
+    "webpack": "webpack --config src/config/webpack.config.js --mode=development --output docs/script/main.js",
+    "webpack-production": "webpack --config src/config/webpack.config.js --mode=production --output docs/script/main.min.js"
   },
   "author": "“Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
   "license": "ISC",
