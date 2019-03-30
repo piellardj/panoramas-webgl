@@ -35,12 +35,12 @@ class VBO extends GLResource {
     }
 
     public freeGLResources(): void {
-        this.gl.deleteBuffer(this.id);
+        this.gl().deleteBuffer(this.id);
         this.id = null;
     }
 
     public bind(location: GLuint): void {
-        const gl = super.gl;
+        const gl = super.gl();
 
         gl.enableVertexAttribArray(location);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.id);

@@ -66,21 +66,34 @@ function main() {
         /* tslint:disable:no-bitwise */
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         converter.draw(viewer.texture);
+        /* tslint:disable:no-bitwise */
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        converter.draw(viewer.texture);
         /* tslint:enable:no-bitwise */
 
-        canvas.toBlob((blob) => {
-            const link = document.createElement("a");
-            link.download = "image.png";
-            link.href = URL.createObjectURL(blob);
-            link.click();
-
+        function restoreCanvas() {
             /* Restore CSS */
             canvas.style.position = "";
             canvas.style.width = "";
             canvas.style.height = "";
 
             forceRedraw = true;
-        });
+        }
+
+        if ((canvas as any).msToBlob) { // for IE
+            const blob = (canvas as any).msToBlob();
+            window.navigator.msSaveBlob(blob, "image.png");
+            restoreCanvas();
+        } else {
+            canvas.toBlob((blob) => {
+                const link = document.createElement("a");
+                link.download = "image.png";
+                link.href = URL.createObjectURL(blob);
+                link.click();
+
+                restoreCanvas();
+            });
+        }
     });
 
     const previewViewport = new Viewport(0, 0, 1, 1);

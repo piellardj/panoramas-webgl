@@ -1,8 +1,8 @@
 import { gl } from "./gl-utils/gl-canvas";
 import GLResource from "./gl-utils/gl-resource";
 import Shader from "./gl-utils/shader";
-import VBO from "./gl-utils/vbo";
 import * as ShaderManager from "./gl-utils/shader-manager";
+import VBO from "./gl-utils/vbo";
 
 import { Format } from "./format-utils";
 import { Parameters } from "./parameters";

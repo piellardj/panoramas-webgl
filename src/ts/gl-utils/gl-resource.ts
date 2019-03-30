@@ -5,7 +5,7 @@
         this._gl = gl;
     }
 
-    public get gl(): WebGLRenderingContext {
+    public gl(): WebGLRenderingContext {
         return this._gl;
     }
 

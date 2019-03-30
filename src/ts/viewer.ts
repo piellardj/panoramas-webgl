@@ -1,9 +1,10 @@
 import { gl } from "./gl-utils/gl-canvas";
 import GLResource from "./gl-utils/gl-resource";
 import Shader from "./gl-utils/shader";
-import VBO from "./gl-utils/vbo";
-import { Mat4 } from "./gl-utils/matrix/mat4";
 import * as ShaderManager from "./gl-utils/shader-manager";
+import VBO from "./gl-utils/vbo";
+
+import { Mat4 } from "./gl-utils/matrix/mat4";
 import { Vec3 } from "./gl-utils/matrix/vec3";
 
 import { Format, FormatUtils } from "./format-utils";

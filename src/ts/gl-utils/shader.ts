@@ -180,16 +180,16 @@ class ShaderProgram extends GLResource {
     }
 
     public freeGLResources(): void {
-        super.gl.deleteProgram(this.id);
+        super.gl().deleteProgram(this.id);
         this.id = null;
     }
 
     public use(): void {
-        super.gl.useProgram(this.id);
+        super.gl().useProgram(this.id);
     }
 
     public bindUniforms(): void {
-        const gl: WebGLRenderingContext = super.gl;
+        const gl: WebGLRenderingContext = super.gl();
         let currTextureUnitNb: number = 0;
 
         Object.keys(this.u).forEach((uName) => {
@@ -221,7 +221,7 @@ class ShaderProgram extends GLResource {
     }
 
     private introspection(): void {
-        const gl = super.gl;
+        const gl = super.gl();
 
         this.uCount = gl.getProgramParameter(this.id, gl.ACTIVE_UNIFORMS);
         this.u = [];
