@@ -245,6 +245,7 @@ class Viewer extends GLResource {
                     this[name] = shader;
                     this[name].a["aCorner"].VBO = this._vbo;
                     /* tslint:enable:no-string-literal */
+                    this._needToRedraw = true;
                 }
             });
     }
