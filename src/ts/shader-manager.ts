@@ -2,6 +2,8 @@ import { gl } from "./gl-canvas";
 import Shader from "./gl-utils/shader";
 import * as ShaderSources from "./shader-sources";
 
+type RegisterCallback = (success: boolean, shader: Shader | null) => void;
+
 interface IShaderInfos {
     fragmentFilename: string;
     vertexFilename: string;
@@ -10,58 +12,84 @@ interface IShaderInfos {
 interface ICachedShader {
     shader: Shader;
     infos: IShaderInfos;
+    pending: boolean;
+    failed: boolean;
+    callbacks: RegisterCallback[];
 }
 
 const cachedShaders: { [id: string]: ICachedShader} = {};
 
 function getShader(name: string): Shader | null {
-    if (!cachedShaders[name]) {
-        return null;
-    }
     return cachedShaders[name].shader;
 }
 
-type BuildShader = (builtShader: Shader | null) => void;
+type BuildCallback = (builtShader: Shader | null) => void;
 
-function buildShader(infos: IShaderInfos, callback: BuildShader) {
-    const filenames = [
-        infos.vertexFilename,
-        infos.fragmentFilename,
-    ];
+function buildShader(infos: IShaderInfos, callback: BuildCallback) {
+    let sourcesPending = 2;
+    let sourcesFailed = 0;
 
-    ShaderSources.loadSources(filenames, (success: boolean) => {
-        if (success) {
-            const vert = ShaderSources.getSource(infos.vertexFilename);
-            const frag = ShaderSources.getSource(infos.fragmentFilename);
-
-            const shader = new Shader(gl, vert, frag);
-            callback(shader);
-        } else {
-            console.error("Failed to load '" + filenames.join(", ") + "' shaders.");
-            callback(null);
+    function loadedSource(success: boolean) {
+        sourcesPending--;
+        if (!success) {
+            sourcesFailed++;
         }
-    });
-}
 
-type RegisterCallback = (success: boolean, shader: Shader | null) => void;
-function registerShader(name: string, infos: IShaderInfos, callback: RegisterCallback): void {
-    if (cachedShaders[name]) {
-        console.warn("Shader '" + name + "' already registered.");
-        callback(true, cachedShaders[name].shader);
-        return;
+        if (sourcesPending === 0) {
+            let shader = null;
+
+            if (sourcesFailed === 0) {
+                const vert = ShaderSources.getSource(infos.vertexFilename);
+                const frag = ShaderSources.getSource(infos.fragmentFilename);
+                shader = new Shader(gl, vert, frag);
+            }
+
+            callback(shader);
+        }
     }
 
-    buildShader(infos, (builtShader) => {
-        if (builtShader != null) {
-            cachedShaders[name] = {
-                infos,
-                shader: builtShader,
-            };
-        }
-    });
+    ShaderSources.loadSource(infos.vertexFilename, loadedSource);
+    ShaderSources.loadSource(infos.fragmentFilename, loadedSource);
 }
 
-function unregisterShader(name: string) {
+function registerShader(name: string, infos: IShaderInfos, callback: RegisterCallback): void {
+    function callAndClearCallbacks(cached: ICachedShader) {
+        for (const cachedCallback of cached.callbacks) {
+            cachedCallback(!cached.failed, cached.shader);
+        }
+
+        cached.callbacks = [];
+    }
+
+    if (typeof cachedShaders[name] === "undefined") {
+        cachedShaders[name] = {
+            callbacks: [callback],
+            failed: false,
+            infos,
+            pending: true,
+            shader: null,
+        };
+        const cached = cachedShaders[name];
+
+        buildShader(infos, (builtShader) => {
+            cached.pending = false;
+            cached.failed = builtShader === null;
+            cached.shader = builtShader;
+
+            callAndClearCallbacks(cached);
+        });
+    } else {
+        const cached = cachedShaders[name];
+
+        if (cached.pending === true) {
+            cached.callbacks.push(callback);
+        } else {
+            callAndClearCallbacks(cached);
+        }
+    }
+}
+
+function deleteShader(name: string) {
     if (cachedShaders[name]) {
         if (cachedShaders[name].shader) {
             cachedShaders[name].shader.freeGLResources();
@@ -73,7 +101,7 @@ function unregisterShader(name: string) {
 export {
     buildShader,
     getShader,
-    registerShader,
     IShaderInfos,
-    unregisterShader,
+    registerShader,
+    deleteShader,
 };

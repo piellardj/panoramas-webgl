@@ -1,60 +1,74 @@
-const cachedSources: { [id: string]: string } = {};
+type LoadCallback = (success: boolean)  => void;
 
-/* Fetches asynchronously the shader source from server and stores it in cache. */
-function loadSource(filename: string, callback: (success: boolean) => void) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "./shaders/" + filename, true);
-    xhr.onload = () => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                cachedSources[filename] = xhr.responseText;
-                callback(true);
-            } else {
-                console.error("Could not load '" + filename + "' shader source: " + xhr.statusText);
-                callback(false);
-            }
-        }
-    };
-    xhr.onerror = () => {
-        console.error("Could not load '" + filename + "' shader source: " + xhr.statusText);
-        callback(false);
-    };
-
-    xhr.send(null);
+interface ICachedSource {
+    text: string;
+    pending: boolean;
+    failed: boolean;
+    callbacks: LoadCallback[];
 }
 
-function loadSources(filenames: string[], callback: (success: boolean) => void) {
-    let nbResponses = 0;
-    let nbFailed = 0;
+const cachedSources: { [id: string]: ICachedSource } = {};
 
-    function incrementNbReponses() {
-        nbResponses++;
-        if (nbResponses === filenames.length) {
-            callback(nbFailed === 0);
+/* Fetches asynchronously the shader source from server and stores it in cache. */
+function loadSource(filename: string, callback: LoadCallback) {
+    function callAndClearCallbacks(cached: ICachedSource) {
+        for (const cachedCallback of cached.callbacks) {
+            cachedCallback(!cached.failed);
         }
+
+        cached.callbacks = [];
     }
 
-    for (const filename of filenames) {
-        if (typeof cachedSources[filename] === "undefined") {
-            loadSource(filename, (success) => {
-                if (!success) {
-                    nbFailed++;
+    if (typeof cachedSources[filename] === "undefined") {
+        cachedSources[filename] = {
+            callbacks: [callback],
+            failed: false,
+            pending: true,
+            text: null,
+        };
+        const cached = cachedSources[filename];
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "./shaders/" + filename, true);
+        xhr.onload = () => {
+            if (xhr.readyState === 4) {
+                cached.pending = false;
+
+                if (xhr.status === 200) {
+                    cached.text = xhr.responseText;
+                    cached.failed = false;
+                } else {
+                    console.error("Cannot load '" + filename + "' shader source: " + xhr.statusText);
+                    cached.failed = true;
                 }
 
-                incrementNbReponses();
-            });
+                callAndClearCallbacks(cached);
+            }
+        };
+        xhr.onerror = () => {
+            console.error("Cannot load '" + filename + "' shader source: " + xhr.statusText);
+            cached.pending = false;
+            cached.failed = true;
+            callAndClearCallbacks(cached);
+        };
+
+        xhr.send(null);
+    } else {
+        const cached = cachedSources[filename];
+
+        if (cached.pending === true) {
+            cached.callbacks.push(callback);
         } else {
-            incrementNbReponses();
+            callAndClearCallbacks(cached);
         }
     }
 }
 
 function getSource(filename: string): string {
-    return cachedSources[filename];
+    return cachedSources[filename].text;
 }
 
 export {
     getSource,
     loadSource,
-    loadSources,
 };
