@@ -5,17 +5,21 @@ let gl: WebGLRenderingContext = null;
 
 /** Initializes a WebGL context */
 function initGL(flags: any): boolean {
+    function setError(message: string) {
+        Demopage.setErrorMessage("webgl-support", message);
+    }
+
     const canvas = Canvas.getCanvas();
 
     gl = canvas.getContext("webgl", flags) as WebGLRenderingContext;
     if (gl == null) {
         gl = canvas.getContext("experimental-webgl", flags) as WebGLRenderingContext;
         if (gl == null) {
-            Demopage.addErrorMessage("Your browser or device does not seem to support WebGL.");
+            setError("Your browser or device does not seem to support WebGL.");
             return false;
         }
 
-        Demopage.addErrorMessage("Your browser or device only supports experimental WebGL.\n" +
+        setError("Your browser or device only supports experimental WebGL.\n" +
             "The simulation may not run as expected.");
     }
 
