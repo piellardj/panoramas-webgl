@@ -1,7 +1,7 @@
 import Converter from "./converter";
 import { Format, FormatUtils } from "./format-utils";
-import * as GlCanvas from "./gl-canvas";
-import { gl } from "./gl-canvas";
+import * as GlCanvas from "./gl-utils/gl-canvas";
+import { gl } from "./gl-utils/gl-canvas";
 import Viewport from "./gl-utils/viewport";
 import { Parameters } from "./parameters";
 import Viewer from "./viewer";
@@ -48,7 +48,7 @@ function main() {
 
     FileControl.addDownloadObserver("file-download-id", () => {
         const idealWidth = Parameters.image.width * Parameters.outputPercentage;
-        const width = Math.pow(2, Math.floor(Math.log2(idealWidth)));
+        const width = Math.pow(2, Math.floor(Math.log(idealWidth) * Math.LOG2E));
         const height = width / FormatUtils.ratio(Parameters.outputFormat);
 
         const canvas = Canvas.getCanvas() as HTMLCanvasElement;

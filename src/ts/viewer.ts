@@ -1,12 +1,13 @@
-import { Format, FormatUtils } from "./format-utils";
-import { gl } from "./gl-canvas";
+import { gl } from "./gl-utils/gl-canvas";
 import GLResource from "./gl-utils/gl-resource";
 import Shader from "./gl-utils/shader";
 import VBO from "./gl-utils/vbo";
-import { Mat4 } from "./mat4";
+import { Mat4 } from "./gl-utils/matrix/mat4";
+import * as ShaderManager from "./gl-utils/shader-manager";
+import { Vec3 } from "./gl-utils/matrix/vec3";
+
+import { Format, FormatUtils } from "./format-utils";
 import { Parameters } from "./parameters";
-import * as ShaderManager from "./shader-manager";
-import { Vec3 } from "./vec3";
 
 declare const Canvas: any;
 
@@ -182,7 +183,7 @@ class Viewer extends GLResource {
 
     private splitAndLoadSkybox(image: HTMLImageElement): void {
         function chooseUpperPowerOfTwo(n: number): number {
-            return Math.pow(2, Math.ceil(Math.log2(n)));
+            return Math.pow(2, Math.ceil(Math.log(n) * Math.LOG2E));
         }
 
         const side = chooseUpperPowerOfTwo(Math.floor(Math.max(image.width / 4, image.height / 3)));

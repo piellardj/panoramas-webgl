@@ -1,5 +1,5 @@
 import { gl } from "./gl-canvas";
-import Shader from "./gl-utils/shader";
+import Shader from "./shader";
 import * as ShaderSources from "./shader-sources";
 
 type RegisterCallback = (success: boolean, shader: Shader | null) => void;

@@ -1,10 +1,11 @@
-import { Format } from "./format-utils";
-import { gl } from "./gl-canvas";
+import { gl } from "./gl-utils/gl-canvas";
 import GLResource from "./gl-utils/gl-resource";
 import Shader from "./gl-utils/shader";
 import VBO from "./gl-utils/vbo";
+import * as ShaderManager from "./gl-utils/shader-manager";
+
+import { Format } from "./format-utils";
 import { Parameters } from "./parameters";
-import * as ShaderManager from "./shader-manager";
 
 class Converter extends GLResource {
     private _shaderBoxToBox: Shader;
