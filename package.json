@@ -1,6 +1,7 @@
 {
-  "name": "panoramas-webg",
-  "version": "0.0.1",
+  "name": "panoramas-webgl",
+  "version": "1.0.0",
+  "homepage": "https://piellardj.github.io/panoramas-webgl",
   "description": "Panorama viewer and editor",
   "main": "build/index.js",
   "scripts": {
@@ -16,7 +17,8 @@
     "webpack": "webpack --config src/config/webpack.config.js --mode=development --output docs/script/main.js",
     "webpack-production": "webpack --config src/config/webpack.config.js --mode=production --output docs/script/main.min.js"
   },
-  "author": "“Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
+  "author": "Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
+  "repository": "github:piellardj/panoramas-webgl",
   "license": "ISC",
   "devDependencies": {
     "fs-extra": "^7.0.1",

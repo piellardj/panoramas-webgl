@@ -22,7 +22,7 @@
             "controls": [
                 {
                     "type": "tabs",
-                    "group": "input-format",
+                    "id": "input-format",
                     "unique": true,
                     "options": [
                         {
@@ -57,7 +57,7 @@
             "controls": [
                 {
                     "type": "tabs",
-                    "group": "output-format",
+                    "id": "output-format",
                     "unique": true,
                     "options": [
                         {
@@ -84,7 +84,7 @@
                 {
                     "title": "Quality",
                     "type": "tabs",
-                    "group": "output-quality",
+                    "id": "output-quality",
                     "unique": true,
                     "options": [
                         {
