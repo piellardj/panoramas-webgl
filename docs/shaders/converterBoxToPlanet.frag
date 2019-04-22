@@ -4,10 +4,10 @@ uniform samplerCube uTexture;
 
 varying vec2 coords;
 
-const float PI = 3.14159;
-uniform float uPaddingTop;
+const float PI = 3.14159;uniform float uPaddingTop;
 uniform float uPaddingBottom;
 uniform float uPaddingBack;
+uniform float uRotateZ;
 uniform float uFlipVertically;
 
 /* param fromCamera doesn't have to be normalized.
@@ -25,6 +25,8 @@ vec3 adjust(vec3 fromCamera) {
 
     theta = clamp(theta, 0.0, PI);
     phi = clamp(phi, -PI, PI);
+
+    phi = mod(phi + PI * (1.0 + 2.0 * uRotateZ), 2.0 * PI) - PI;
 
     return vec3(
         sin(theta) * cos(phi),

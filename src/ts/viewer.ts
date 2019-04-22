@@ -150,6 +150,7 @@ class Viewer extends GLResource {
             shader.u["uPaddingTop"].value = Parameters.paddingTop;
             shader.u["uPaddingBottom"].value = Parameters.paddingBottom;
             shader.u["uPaddingBack"].value = Parameters.paddingBack;
+            shader.u["uRotateZ"].value = Parameters.rotateZ;
             shader.u["uFlipVertically"].value = Parameters.flipVertically ? -1 : 1;
             shader.u["uShowFrame"].value = Parameters.showFrame ? 1 : 0;
             /* tslint:enable:no-string-literal */

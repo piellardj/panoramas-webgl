@@ -14,6 +14,7 @@ function main() {
         Parameters.paddingTop = 0;
         Parameters.paddingBottom = 0;
         Parameters.paddingBack = 0;
+        Parameters.rotateZ = 0;
         Parameters.flipVertically = false;
     }
 

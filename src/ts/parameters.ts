@@ -98,6 +98,13 @@ Range.addObserver(PADDING_BACK_CONTROL, (margin: number) => {
     callOnChangeObservers();
 });
 
+let rotateZ: number;
+const ROTATE_Z_CONTROL = "rotate-z-range-id";
+Range.addObserver(ROTATE_Z_CONTROL, (r: number) => {
+    rotateZ = r;
+    callOnChangeObservers();
+});
+
 let flipVertically: boolean;
 const FLIP_VERTICALLY_CONTROL = "flip-vertically-checkbox-id";
 Checkbox.addObserver(FLIP_VERTICALLY_CONTROL, (checked: boolean) => {
@@ -221,6 +228,15 @@ class Parameters {
     }
     public static get paddingBack(): number {
         return paddingBack;
+    }
+
+    public static set rotateZ(r: number) {
+        Range.setValue(ROTATE_Z_CONTROL, r);
+        rotateZ = Range.getValue(ROTATE_Z_CONTROL);
+        callOnChangeObservers();
+    }
+    public static get rotateZ(): number {
+        return rotateZ;
     }
 
     public static set flipVertically(show: boolean) {

@@ -68,6 +68,7 @@ class Converter extends GLResource {
             shader.u["uPaddingTop"].value = Parameters.paddingTop;
             shader.u["uPaddingBottom"].value = Parameters.paddingBottom;
             shader.u["uPaddingBack"].value = Parameters.paddingBack;
+            shader.u["uRotateZ"].value = Parameters.rotateZ;
             shader.u["uFlipVertically"].value = Parameters.flipVertically ? -1 : 1;
             /* tslint:enable:no-string-literal */
 

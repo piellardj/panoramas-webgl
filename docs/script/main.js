@@ -163,6 +163,7 @@ var Converter = (function (_super) {
             shader.u["uPaddingTop"].value = parameters_1.Parameters.paddingTop;
             shader.u["uPaddingBottom"].value = parameters_1.Parameters.paddingBottom;
             shader.u["uPaddingBack"].value = parameters_1.Parameters.paddingBack;
+            shader.u["uRotateZ"].value = parameters_1.Parameters.rotateZ;
             shader.u["uFlipVertically"].value = parameters_1.Parameters.flipVertically ? -1 : 1;
             shader.use();
             shader.bindUniformsAndAttributes();
@@ -1194,6 +1195,7 @@ function main() {
         parameters_1.Parameters.paddingTop = 0;
         parameters_1.Parameters.paddingBottom = 0;
         parameters_1.Parameters.paddingBack = 0;
+        parameters_1.Parameters.rotateZ = 0;
         parameters_1.Parameters.flipVertically = false;
     }
     Canvas.showLoader(true);
@@ -1361,6 +1363,12 @@ Range.addObserver(PADDING_BACK_CONTROL, function (margin) {
     paddingBack = margin;
     callOnChangeObservers();
 });
+var rotateZ;
+var ROTATE_Z_CONTROL = "rotate-z-range-id";
+Range.addObserver(ROTATE_Z_CONTROL, function (r) {
+    rotateZ = r;
+    callOnChangeObservers();
+});
 var flipVertically;
 var FLIP_VERTICALLY_CONTROL = "flip-vertically-checkbox-id";
 Checkbox.addObserver(FLIP_VERTICALLY_CONTROL, function (checked) {
@@ -1516,6 +1524,18 @@ var Parameters = (function () {
         set: function (margin) {
             Range.setValue(PADDING_BACK_CONTROL, margin);
             paddingBack = Range.getValue(PADDING_BACK_CONTROL);
+            callOnChangeObservers();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Parameters, "rotateZ", {
+        get: function () {
+            return rotateZ;
+        },
+        set: function (r) {
+            Range.setValue(ROTATE_Z_CONTROL, r);
+            rotateZ = Range.getValue(ROTATE_Z_CONTROL);
             callOnChangeObservers();
         },
         enumerable: true,
@@ -1696,6 +1716,7 @@ var Viewer = (function (_super) {
             shader.u["uPaddingTop"].value = parameters_1.Parameters.paddingTop;
             shader.u["uPaddingBottom"].value = parameters_1.Parameters.paddingBottom;
             shader.u["uPaddingBack"].value = parameters_1.Parameters.paddingBack;
+            shader.u["uRotateZ"].value = parameters_1.Parameters.rotateZ;
             shader.u["uFlipVertically"].value = parameters_1.Parameters.flipVertically ? -1 : 1;
             shader.u["uShowFrame"].value = parameters_1.Parameters.showFrame ? 1 : 0;
             shader.use();
