@@ -5,28 +5,26 @@
   "description": "Panorama viewer and editor",
   "main": "build/index.js",
   "scripts": {
-    "build-demo-js": "npm run tsc && npm run webpack && npm run webpack-production",
     "build-page-template": "node src/generate-page-template.js",
     "build-shaders": "node src/build-shaders.js",
     "copy-resources": "shx cp -r src/resources/* docs",
-    "build": "npm run build-page-template && npm run build-shaders && npm run build-demo-js && npm run copy-resources",
+    "build": "npm run build-page-template && npm run build-shaders && npm run webpack && npm run copy-resources",
     "rebuild": "npm run clean && npm run build",
-    "clean": "shx rm -rf build/ tmp/ docs/*",
+    "clean": "shx rm -rf build/ docs/*",
     "lint": "tslint -c src/config/tslint.json -p src/config/tsconfig.json",
-    "tsc": "tsc -p src/config/tsconfig.json",
-    "webpack": "webpack --config src/config/webpack.config.js --mode=development --output docs/script/main.js",
-    "webpack-production": "webpack --config src/config/webpack.config.js --mode=production --output docs/script/main.min.js"
+    "webpack": "webpack --config src/config/webpack.config.js --output docs/script/main.min.js"
   },
   "author": "Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
   "repository": "github:piellardj/panoramas-webgl",
   "license": "ISC",
   "devDependencies": {
-    "fs-extra": "^7.0.1",
+    "fs-extra": "^8.0.1",
     "shx": "^0.3.2",
-    "tslint": "^5.13.1",
-    "typescript": "^3.3.3333",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3",
+    "ts-loader": "^6.0.2",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.2",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4",
     "webpage-templates": "github:piellardj/webpage-templates"
   }
 }
