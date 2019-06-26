@@ -62,7 +62,7 @@ class Converter extends GLResource {
     public draw(texture: WebGLTexture): void {
         const shader = this.getShader(Parameters.inputFormat, Parameters.outputFormat);
 
-        if (shader) {
+        if (shader && texture) {
             /* tslint:disable:no-string-literal */
             shader.u["uTexture"].value = texture;
             shader.u["uPaddingTop"].value = Parameters.paddingTop;

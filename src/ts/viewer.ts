@@ -141,7 +141,7 @@ class Viewer extends GLResource {
             shader = this._shaderTinyplanet;
         }
 
-        if (shader) {
+        if (shader && this._texture) {
             this.recomputeMatrices();
 
             /* tslint:disable:no-string-literal */
