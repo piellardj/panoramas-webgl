@@ -6,8 +6,7 @@ import Viewport from "./gl-utils/viewport";
 import { Parameters } from "./parameters";
 import Viewer from "./viewer";
 
-declare const Canvas: any;
-declare const FileControl: any;
+import "./page-interface-generated";
 
 function main() {
     function resetEditControls() {
@@ -18,7 +17,7 @@ function main() {
         Parameters.flipVertically = false;
     }
 
-    Canvas.showLoader(true);
+    Page.Canvas.showLoader(true);
 
     Parameters.onImageLoadObservers.push(resetEditControls);
 
@@ -47,12 +46,12 @@ function main() {
 
     let forceRedraw = false;
 
-    FileControl.addDownloadObserver("file-download-id", () => {
+    Page.FileControl.addDownloadObserver("file-download-id", () => {
         const idealWidth = Parameters.image.width * Parameters.outputPercentage;
         const width = Math.pow(2, Math.floor(Math.log(idealWidth) * Math.LOG2E));
         const height = width / FormatUtils.ratio(Parameters.outputFormat);
 
-        const canvas = Canvas.getCanvas() as HTMLCanvasElement;
+        const canvas = Page.Canvas.getCanvas() as HTMLCanvasElement;
 
         /* Update CSS to allow the canvas to have the correct size */
         canvas.style.position = "absolute";

@@ -10,7 +10,7 @@ import { Vec3 } from "./gl-utils/matrix/vec3";
 import { Format, FormatUtils } from "./format-utils";
 import { Parameters } from "./parameters";
 
-declare const Canvas: any;
+import "./page-interface-generated";
 
 class Viewer extends GLResource {
     private _shaderSkybox: Shader;
@@ -54,15 +54,15 @@ class Viewer extends GLResource {
 
         Parameters.onInputFormatChangeObservers.push((previous: Format, newOne: Format) => {
             if (previous === Format.Skybox || newOne === Format.Skybox) {
-                Canvas.showLoader(true);
+                Page.Canvas.showLoader(true);
                 doNeedToReloadImage();
             } else {
                 doNeedToRedraw();
             }
         });
         Parameters.onChangeObservers.push(doNeedToRedraw);
-        Canvas.Observers.canvasResize.push(doNeedToRedraw);
-        Canvas.Observers.mouseDrag.push(doNeedToRedraw);
+        Page.Canvas.Observers.canvasResize.push(doNeedToRedraw);
+        Page.Canvas.Observers.mouseDrag.push(doNeedToRedraw);
 
         this._vbo = VBO.createQuad(gl, -1, -1, 1, 1);
 
@@ -70,8 +70,8 @@ class Viewer extends GLResource {
         this.buildShader("_shaderSkybox", "viewer.vert", "viewerSkybox.frag");
         this.buildShader("_shaderTinyplanet", "viewer.vert", "viewerTinyplanet.frag");
 
-        Canvas.Observers.mouseDrag.push((dX: number, dY: number) => {
-            this._phi += Parameters.fov * Canvas.getAspectRatio() * dX;
+        Page.Canvas.Observers.mouseDrag.push((dX: number, dY: number) => {
+            this._phi += Parameters.fov * Page.Canvas.getAspectRatio() * dX;
             this._theta -= Parameters.fov * dY;
             this._theta = Math.min(Math.PI - 0.001, Math.max(0.001, this._theta));
             doNeedToRedraw();
@@ -127,7 +127,7 @@ class Viewer extends GLResource {
             }
 
             this._needToReloadImage = false;
-            Canvas.showLoader(false);
+            Page.Canvas.showLoader(false);
         }
     }
 
@@ -262,7 +262,8 @@ class Viewer extends GLResource {
         this._projToWorldMatrix.lookAt(this._eyePos, lookAt, this._vertical);
         this._projToWorldMatrix.invert();
 
-        const aspectRatio = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        const canvas = gl.canvas as HTMLCanvasElement;
+        const aspectRatio = canvas.clientWidth / canvas.clientHeight;
         this._tmpMatrix.perspectiveInverse(Parameters.fov, aspectRatio, 0.1, Infinity);
 
         // no need to remove translations from invViewMatrix since camera is on world (0,0,0)
