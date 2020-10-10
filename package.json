@@ -28,6 +28,6 @@
     "typescript": "^4.0.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
-    "webpage-templates": "github:piellardj/webpage-templates"
+    "webpage-templates": "file:C:\\Users\\Jeremie\\Documents\\GitHub\\webpage-templates"
   }
 }
