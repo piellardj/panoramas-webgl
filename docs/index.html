@@ -11,12 +11,17 @@
     <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
     <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
-    <link rel="stylesheet" type="text/css" href="css/page.css">
+    <link rel="stylesheet" type="text/css" href="css/page.css?v=2021-04-10T18%3A38%3A26.447Z">
   </head>
 
   <body>
     <header>
-      <a class="logo" href="https://piellardj.github.io"></a>
+      <a class="logo logo-animate-fill" href="https://piellardj.github.io" id="back-to-home-button" aria-label="Go to home">
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+          <g stroke-width="2">
+            <path fill="none" stroke-linejoin="round" d="M17.5,32h4.5v11h7v-7l1,-1h4l1,1v7h7v-11h4.5L32,16.5z" />
+        </svg>
+      </a>
     </header>
     <main>
       <div class="intro">
@@ -60,7 +65,6 @@
               <line x1="22" y1="10" x2="10" y2="22" stroke-linecap="round" stroke-width="2" />
             </svg>
           </label>
-
           <section class="controls-section">
             <h2>Input</h2>
 
@@ -77,7 +81,7 @@
               </div>
               <div class="control" id="control-file-upload-id">
                 <div class="file-control upload ">
-                  <input type="file" name="file" id="file-upload-id" class="inputfile" accept="image/bmp,image/png,image/jpeg" />
+                  <input type="file" name="file" id="file-upload-id" class="file-input" accept="image/bmp,image/png,image/jpeg" />
                   <label class="file-control-button" for="file-upload-id">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                       <path d="M12 22L12 13 7 13 16 2 25 13 20 13 20 22ZM6 25L26 25 26 29 6 29Z" />
@@ -89,7 +93,6 @@
             </div>
           </section>
           <hr />
-
           <section class="controls-section">
             <h2>Ouput</h2>
 
@@ -124,7 +127,8 @@
               </div>
               <div class="control" id="control-file-download-id">
                 <div class="file-control download ">
-                  <label class="file-control-button" id="file-download-id">
+                  <input type="button" id="file-download-id" class="file-input" />
+                  <label class="file-control-button" for="file-download-id">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                       <path d="M12 4L12 13 7 13 16 24 25 13 20 13 20 4ZM6 25L26 25 26 29 6 29Z" />
                     </svg>
@@ -135,16 +139,32 @@
             </div>
           </section>
           <hr />
-
           <section class="controls-section">
             <h2>Display</h2>
 
             <div class="controls-list">
               <div class="control" id="control-fov-range-id">
                 <label>Field of view:</label>
-                <div class="range">
+                <div class="range-container">
                   <input type="range" min="15" max="110" value="70" step="1" class="slider" id="fov-range-id">
-                  <span class="tooltip"></span>
+                  <div class="range-skin-container">
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-left range-stub-left"></span>
+                    </div>
+                    <div class="range-progress">
+                      <div class="range-progress-left">
+                        <span class="range-bar range-bar-left"></span>
+                        <span class="range-handle"></span>
+                        <output for="fov-range-id" class="range-tooltip"></output>
+                      </div>
+                      <div class="range-progress-right">
+                        <span class="range-bar range-bar-right"></span>
+                      </div>
+                    </div>
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-right range-stub-right"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="control" id="control-frame-checkbox-id">
@@ -157,37 +177,104 @@
             </div>
           </section>
           <hr />
-
           <section class="controls-section">
             <h2>Edit</h2>
 
             <div class="controls-list">
               <div class="control" id="control-padding-top-range-id">
                 <label>Pad top:</label>
-                <div class="range">
+                <div class="range-container">
                   <input type="range" min="0" max="1" value="0" step="0.01" class="slider" id="padding-top-range-id">
-                  <span class="tooltip"></span>
+                  <div class="range-skin-container">
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-left range-stub-left"></span>
+                    </div>
+                    <div class="range-progress">
+                      <div class="range-progress-left">
+                        <span class="range-bar range-bar-left"></span>
+                        <span class="range-handle"></span>
+                        <output for="padding-top-range-id" class="range-tooltip"></output>
+                      </div>
+                      <div class="range-progress-right">
+                        <span class="range-bar range-bar-right"></span>
+                      </div>
+                    </div>
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-right range-stub-right"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="control" id="control-padding-bottom-range-id">
                 <label>Pad bottom:</label>
-                <div class="range">
+                <div class="range-container">
                   <input type="range" min="0" max="1" value="0" step="0.01" class="slider" id="padding-bottom-range-id">
-                  <span class="tooltip"></span>
+                  <div class="range-skin-container">
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-left range-stub-left"></span>
+                    </div>
+                    <div class="range-progress">
+                      <div class="range-progress-left">
+                        <span class="range-bar range-bar-left"></span>
+                        <span class="range-handle"></span>
+                        <output for="padding-bottom-range-id" class="range-tooltip"></output>
+                      </div>
+                      <div class="range-progress-right">
+                        <span class="range-bar range-bar-right"></span>
+                      </div>
+                    </div>
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-right range-stub-right"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="control" id="control-padding-back-range-id">
                 <label>Pad back:</label>
-                <div class="range">
+                <div class="range-container">
                   <input type="range" min="0" max="5" value="0" step="0.01" class="slider" id="padding-back-range-id">
-                  <span class="tooltip"></span>
+                  <div class="range-skin-container">
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-left range-stub-left"></span>
+                    </div>
+                    <div class="range-progress">
+                      <div class="range-progress-left">
+                        <span class="range-bar range-bar-left"></span>
+                        <span class="range-handle"></span>
+                        <output for="padding-back-range-id" class="range-tooltip"></output>
+                      </div>
+                      <div class="range-progress-right">
+                        <span class="range-bar range-bar-right"></span>
+                      </div>
+                    </div>
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-right range-stub-right"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="control" id="control-rotate-z-range-id">
                 <label>Rotate Z:</label>
-                <div class="range">
+                <div class="range-container">
                   <input type="range" min="0" max="1" value="0" step="0.01" class="slider" id="rotate-z-range-id">
-                  <span class="tooltip"></span>
+                  <div class="range-skin-container">
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-left range-stub-left"></span>
+                    </div>
+                    <div class="range-progress">
+                      <div class="range-progress-left">
+                        <span class="range-bar range-bar-left"></span>
+                        <span class="range-handle"></span>
+                        <output for="rotate-z-range-id" class="range-tooltip"></output>
+                      </div>
+                      <div class="range-progress-right">
+                        <span class="range-bar range-bar-right"></span>
+                      </div>
+                    </div>
+                    <div class="range-stub">
+                      <span class="range-bar range-bar-right range-stub-right"></span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="control" id="control-flip-vertically-checkbox-id">
@@ -226,8 +313,8 @@
         </a>
       </div>
     </footer>
-    <script src="script/page.min.js"></script>
-    <script src="script/main.min.js"></script>
+    <script src="script/page.min.js?v=2021-04-10T18%3A38%3A26.447Z"></script>
+    <script src="script/main.min.js?v=2021-04-10T18%3A38%3A26.447Z"></script>
   </body>
 
 </html>
