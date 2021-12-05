@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var Demopage;
@@ -44,7 +43,6 @@ var Page;
     })(Demopage = Page.Demopage || (Page.Demopage = {}));
 })(Page || (Page = {}));
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var Helpers;
@@ -163,7 +161,6 @@ var Page;
     })(Helpers = Page.Helpers || (Page.Helpers = {}));
 })(Page || (Page = {}));
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var Controls;
@@ -184,7 +181,6 @@ var Page;
         Controls.setVisibility = setVisibility;
     })(Controls = Page.Controls || (Page.Controls = {}));
 })(Page || (Page = {}));
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 (function (Page) {
     var Sections;
     (function (Sections) {
@@ -245,7 +241,6 @@ var Page;
 })(Page || (Page = {}));
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var Tabs;
@@ -292,7 +287,6 @@ var Page;
                         inputElement.checked = isWanted;
                     }
                     this.reloadValues();
-                    this.callObservers();
                 },
                 enumerable: false,
                 configurable: true
@@ -350,6 +344,10 @@ var Page;
                 Page.Helpers.URL.setQueryParameter(PREFIX, tabs.id, values);
             }
             Storage.storeState = storeState;
+            function clearStoredState(tabs) {
+                Page.Helpers.URL.removeQueryParameter(PREFIX, tabs.id);
+            }
+            Storage.clearStoredState = clearStoredState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (controlId, value) {
                     var values = value.split(SEPARATOR);
@@ -360,6 +358,7 @@ var Page;
                     }
                     else {
                         tabs.values = values;
+                        tabs.callObservers();
                     }
                 });
             }
@@ -386,72 +385,135 @@ var Page;
             return tabs.values;
         }
         Tabs_1.getValues = getValues;
-        function setValues(tabsId, values) {
+        function setValues(tabsId, values, updateURLStorage) {
+            if (updateURLStorage === void 0) { updateURLStorage = false; }
             var tabs = Cache.getTabsById(tabsId);
             tabs.values = values;
+            if (updateURLStorage) {
+                Storage.storeState(tabs);
+            }
         }
         Tabs_1.setValues = setValues;
+        function storeState(tabsId) {
+            var tabs = Cache.getTabsById(tabsId);
+            Storage.storeState(tabs);
+        }
+        Tabs_1.storeState = storeState;
+        function clearStoredState(tabsIdd) {
+            var tabs = Cache.getTabsById(tabsIdd);
+            Storage.clearStoredState(tabs);
+        }
+        Tabs_1.clearStoredState = clearStoredState;
     })(Tabs = Page.Tabs || (Page.Tabs = {}));
 })(Page || (Page = {}));
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var FileControl;
     (function (FileControl) {
-        var filenameMaxSize = 16;
-        function truncate(name) {
-            if (name.length > filenameMaxSize) {
-                return name.substring(0, 15) + "..." +
-                    name.substring(name.length - 15);
-            }
-            return name;
-        }
-        function getElementBySelector(selector) {
-            var elt = document.querySelector(selector);
-            if (!elt) {
-                console.error("Cannot find input file '" + selector + "'.");
-            }
-            return elt;
-        }
-        function getUploadInputById(id) {
-            var selector = ".file-control.upload > input[type=file][id=" + id + "]";
-            return getElementBySelector(selector);
-        }
-        function getDownloadInputById(id) {
-            var selector = ".file-control.download > input[type=button][id=" + id + "]";
-            return getElementBySelector(selector);
-        }
-        /* Bind event so that filename is displayed on upload */
-        var labelsSelector = ".file-control.upload > label";
-        Page.Helpers.Events.callAfterDOMLoaded(function () {
-            var labels = document.querySelectorAll(labelsSelector);
-            var _loop_1 = function (i) {
-                var label = labels[i];
-                var input = getUploadInputById(label.htmlFor);
-                if (input) {
-                    var span_1 = label.querySelector("span");
-                    input.addEventListener("change", function () {
-                        if (input.files.length === 1) {
-                            span_1.innerText = truncate(input.files[0].name);
+        var FileUpload = /** @class */ (function () {
+            function FileUpload(container) {
+                var _this = this;
+                this.observers = [];
+                this.inputElement = container.querySelector("input");
+                this.labelSpanElement = container.querySelector("label > span");
+                this.inputElement.addEventListener("change", function (event) {
+                    event.stopPropagation();
+                    var files = _this.inputElement.files;
+                    if (files.length === 1) {
+                        _this.labelSpanElement.innerText = FileUpload.truncate(files[0].name);
+                        for (var _i = 0, _a = _this.observers; _i < _a.length; _i++) {
+                            var observer = _a[_i];
+                            observer(files);
                         }
-                    }, false);
-                }
-            };
-            for (var i = 0; i < labels.length; i++) {
-                _loop_1(i);
+                    }
+                }, false);
             }
+            FileUpload.prototype.clear = function () {
+                this.inputElement.value = "";
+                this.labelSpanElement.innerText = this.labelSpanElement.dataset["placeholder"];
+            };
+            FileUpload.truncate = function (name) {
+                if (name.length > FileUpload.filenameMaxSize) {
+                    return name.substring(0, FileUpload.filenameMaxSize - 1) + "..." +
+                        name.substring(name.length - (FileUpload.filenameMaxSize - 1));
+                }
+                return name;
+            };
+            FileUpload.filenameMaxSize = 16;
+            return FileUpload;
+        }());
+        var FileDownload = /** @class */ (function () {
+            function FileDownload(container) {
+                var _this = this;
+                this.observers = [];
+                this.buttonElement = container.querySelector("input");
+                this.buttonElement.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    for (var _i = 0, _a = _this.observers; _i < _a.length; _i++) {
+                        var observer = _a[_i];
+                        observer();
+                    }
+                }, false);
+            }
+            return FileDownload;
+        }());
+        var Cache;
+        (function (Cache) {
+            function loadFileUploadsCache() {
+                var result = {};
+                var selector = ".file-control.upload > input[id]";
+                var fileUploadInputsElements = document.querySelectorAll(selector);
+                for (var i = 0; i < fileUploadInputsElements.length; i++) {
+                    var container = fileUploadInputsElements[i].parentElement;
+                    var id = fileUploadInputsElements[i].id;
+                    result[id] = new FileUpload(container);
+                }
+                return result;
+            }
+            function loadFileDownloadsCache() {
+                var result = {};
+                var selector = ".file-control.download > input[id]";
+                var fileDownloadInputsElements = document.querySelectorAll(selector);
+                for (var i = 0; i < fileDownloadInputsElements.length; i++) {
+                    var container = fileDownloadInputsElements[i].parentElement;
+                    var id = fileDownloadInputsElements[i].id;
+                    result[id] = new FileDownload(container);
+                }
+                return result;
+            }
+            var fileUploadsCache;
+            var fileDownloadsCache;
+            function getFileUploadById(id) {
+                Cache.load();
+                return fileUploadsCache[id] || null;
+            }
+            Cache.getFileUploadById = getFileUploadById;
+            function getFileDownloadById(id) {
+                Cache.load();
+                return fileDownloadsCache[id] || null;
+            }
+            Cache.getFileDownloadById = getFileDownloadById;
+            function load() {
+                if (typeof fileUploadsCache === "undefined") {
+                    fileUploadsCache = loadFileUploadsCache();
+                }
+                if (typeof fileDownloadsCache === "undefined") {
+                    fileDownloadsCache = loadFileDownloadsCache();
+                }
+            }
+            Cache.load = load;
+        })(Cache || (Cache = {}));
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
+            Cache.load();
         });
         /**
          * @return {boolean} Whether or not the observer was added
          */
         function addDownloadObserver(id, observer) {
-            var input = getDownloadInputById(id);
-            if (input) {
-                input.addEventListener("click", function () {
-                    event.stopPropagation();
-                    observer();
-                }, false);
+            var fileDownload = Cache.getFileDownloadById(id);
+            if (fileDownload) {
+                fileDownload.observers.push(observer);
                 return true;
             }
             return false;
@@ -461,24 +523,23 @@ var Page;
          * @return {boolean} Whether or not the observer was added
          */
         function addUploadObserver(uploadId, observer) {
-            var input = getUploadInputById(uploadId);
-            if (input) {
-                input.addEventListener("change", function () {
-                    event.stopPropagation();
-                    if (input.files.length === 1) {
-                        observer(input.files);
-                    }
-                }, false);
+            var fileUpload = Cache.getFileUploadById(uploadId);
+            if (fileUpload) {
+                fileUpload.observers.push(observer);
                 return true;
             }
             return false;
         }
         FileControl.addUploadObserver = addUploadObserver;
+        function clearFileUpload(id) {
+            var fileUpload = Cache.getFileUploadById(id);
+            fileUpload.clear();
+        }
+        FileControl.clearFileUpload = clearFileUpload;
     })(FileControl = Page.FileControl || (Page.FileControl = {}));
 })(Page || (Page = {}));
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var Checkbox;
@@ -503,7 +564,6 @@ var Page;
                 set: function (newChecked) {
                     this.element.checked = newChecked;
                     this.reloadValue();
-                    this.callObservers();
                 },
                 enumerable: false,
                 configurable: true
@@ -554,6 +614,10 @@ var Page;
                 Page.Helpers.URL.setQueryParameter(PREFIX, checkbox.id, stateAsString);
             }
             Storage.storeState = storeState;
+            function clearStoredState(checkbox) {
+                Page.Helpers.URL.removeQueryParameter(PREFIX, checkbox.id);
+            }
+            Storage.clearStoredState = clearStoredState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (checkboxId, value) {
                     var checkbox = Cache.getCheckboxById(checkboxId);
@@ -563,6 +627,7 @@ var Page;
                     }
                     else {
                         checkbox.checked = (value === CHECKED);
+                        checkbox.callObservers();
                     }
                 });
             }
@@ -599,11 +664,20 @@ var Page;
             return false;
         }
         Checkbox_1.isChecked = isChecked;
+        function storeState(checkboxId) {
+            var checkbox = Cache.getCheckboxById(checkboxId);
+            Storage.storeState(checkbox);
+        }
+        Checkbox_1.storeState = storeState;
+        function clearStoredState(checkboxId) {
+            var checkbox = Cache.getCheckboxById(checkboxId);
+            Storage.clearStoredState(checkbox);
+        }
+        Checkbox_1.clearStoredState = clearStoredState;
     })(Checkbox = Page.Checkbox || (Page.Checkbox = {}));
 })(Page || (Page = {}));
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var Page;
 (function (Page) {
     var Range;
@@ -617,22 +691,20 @@ var Page;
                 this.progressLeftElement = container.querySelector(".range-progress-left");
                 this.tooltipElement = container.querySelector("output.range-tooltip");
                 this.id = this.inputElement.id;
+                var inputMin = +this.inputElement.min;
+                var inputMax = +this.inputElement.max;
+                var inputStep = +this.inputElement.step;
+                this.nbDecimalsToDisplay = Range.getMaxNbDecimals(inputMin, inputMax, inputStep);
                 this.inputElement.addEventListener("input", function (event) {
                     event.stopPropagation();
                     _this.reloadValue();
-                    for (var _i = 0, _a = _this.onInputObservers; _i < _a.length; _i++) {
-                        var observer = _a[_i];
-                        observer(_this.value);
-                    }
+                    _this.callSpecificObservers(_this.onInputObservers);
                 });
                 this.inputElement.addEventListener("change", function (event) {
                     event.stopPropagation();
                     _this.reloadValue();
                     Storage.storeState(_this);
-                    for (var _i = 0, _a = _this.onChangeObservers; _i < _a.length; _i++) {
-                        var observer = _a[_i];
-                        observer(_this.value);
-                    }
+                    _this.callSpecificObservers(_this.onChangeObservers);
                 });
                 this.reloadValue();
             }
@@ -643,14 +715,17 @@ var Page;
                 set: function (newValue) {
                     this.inputElement.value = "" + newValue;
                     this.reloadValue();
-                    this.callObservers();
                 },
                 enumerable: false,
                 configurable: true
             });
             Range.prototype.callObservers = function () {
-                for (var _i = 0, _a = this.onChangeObservers; _i < _a.length; _i++) {
-                    var observer = _a[_i];
+                this.callSpecificObservers(this.onInputObservers);
+                this.callSpecificObservers(this.onChangeObservers);
+            };
+            Range.prototype.callSpecificObservers = function (observers) {
+                for (var _i = 0, observers_1 = observers; _i < observers_1.length; _i++) {
+                    var observer = observers_1[_i];
                     observer(this.value);
                 }
             };
@@ -660,11 +735,46 @@ var Page;
                 var progression = currentLength / totalLength;
                 progression = Math.max(0, Math.min(1, progression));
                 this.progressLeftElement.style.width = (100 * progression) + "%";
-                this.tooltipElement.textContent = this.inputElement.value;
+                var text;
+                if (this.nbDecimalsToDisplay < 0) {
+                    text = this.inputElement.value;
+                }
+                else {
+                    text = (+this.inputElement.value).toFixed(this.nbDecimalsToDisplay);
+                }
+                this.tooltipElement.textContent = text;
             };
             Range.prototype.reloadValue = function () {
                 this._value = +this.inputElement.value;
                 this.updateAppearance();
+            };
+            Range.getMaxNbDecimals = function () {
+                var numbers = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    numbers[_i] = arguments[_i];
+                }
+                var nbDecimals = -1;
+                for (var _a = 0, numbers_1 = numbers; _a < numbers_1.length; _a++) {
+                    var n = numbers_1[_a];
+                    var local = Range.nbDecimals(n);
+                    if (n < 0) {
+                        return -1;
+                    }
+                    else if (nbDecimals < local) {
+                        nbDecimals = local;
+                    }
+                }
+                return nbDecimals;
+            };
+            Range.nbDecimals = function (x) {
+                var xAsString = x.toString();
+                if (/^[0-9]+$/.test(xAsString)) {
+                    return 0;
+                }
+                else if (/^[0-9]+\.[0-9]+$/.test(xAsString)) {
+                    return xAsString.length - (xAsString.indexOf(".") + 1);
+                }
+                return -1; // failed to parse
             };
             return Range;
         }());
@@ -702,6 +812,10 @@ var Page;
                 Page.Helpers.URL.setQueryParameter(PREFIX, range.id, valueAsString);
             }
             Storage.storeState = storeState;
+            function clearStoredState(range) {
+                Page.Helpers.URL.removeQueryParameter(PREFIX, range.id);
+            }
+            Storage.clearStoredState = clearStoredState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (controlId, value) {
                     var range = Cache.getRangeById(controlId);
@@ -711,6 +825,7 @@ var Page;
                     }
                     else {
                         range.value = +value;
+                        range.callObservers();
                     }
                 });
             }
@@ -720,7 +835,8 @@ var Page;
             Cache.load();
             Storage.applyStoredState();
         });
-        var isIE11 = !!window.MSInputMethodContext && !!document["documentMode"];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
         /**
          * Callback will be called every time the value changes.
          * @return {boolean} Whether or not the observer was added
@@ -767,11 +883,21 @@ var Page;
             }
         }
         Range_1.setValue = setValue;
+        function storeState(rangeId) {
+            var range = Cache.getRangeById(rangeId);
+            Storage.storeState(range);
+        }
+        Range_1.storeState = storeState;
+        function clearStoredState(rangeId) {
+            var range = Cache.getRangeById(rangeId);
+            Storage.clearStoredState(range);
+        }
+        Range_1.clearStoredState = clearStoredState;
     })(Range = Page.Range || (Page.Range = {}));
 })(Page || (Page = {}));
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 var Page;
 (function (Page) {
     var Canvas;
@@ -888,10 +1014,11 @@ var Page;
         }
         var Mouse;
         (function (Mouse) {
-            var mousePosition = [];
+            var mousePosition = [0, 0];
+            var clientMousePosition = [0, 0];
             var isMouseDownInternal = false;
             function getMousePosition() {
-                return mousePosition.slice();
+                return [mousePosition[0], mousePosition[1]];
             }
             Mouse.getMousePosition = getMousePosition;
             function setMousePosition(x, y) {
@@ -924,6 +1051,8 @@ var Page;
             }
             Mouse.mouseUp = mouseUp;
             function mouseMove(clientX, clientY) {
+                clientMousePosition[0] = clientX;
+                clientMousePosition[1] = clientY;
                 var newPos = clientToRelative(clientX, clientY);
                 var dX = newPos[0] - mousePosition[0];
                 var dY = newPos[1] - mousePosition[1];
@@ -981,11 +1110,12 @@ var Page;
                         mouseUp();
                     }
                 });
+                canvasResizeObservers.push(function () {
+                    mouseMove(clientMousePosition[0], clientMousePosition[1]);
+                });
             }
         })(Mouse || (Mouse = {}));
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        var Touch;
-        (function (Touch) {
+        (function Touch() {
             var currentTouches = [];
             var currentDistance = 0; // for pinching management
             function computeDistance(firstTouch, secondTouch) {
@@ -1078,7 +1208,7 @@ var Page;
                 window.addEventListener("touchend", handleTouchEnd);
                 window.addEventListener("touchmove", handleTouchMove, { passive: false });
             }
-        })(Touch || (Touch = {}));
+        })();
         var Indicators;
         (function (Indicators) {
             var indicatorSpansCache = {};
