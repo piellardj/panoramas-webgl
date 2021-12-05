@@ -82,7 +82,7 @@ function main() {
 
         if ((canvas as any).msToBlob) { // for IE
             const blob = (canvas as any).msToBlob();
-            window.navigator.msSaveBlob(blob, "image.png");
+            (window.navigator as any).msSaveBlob(blob, "image.png");
             restoreCanvas();
         } else {
             canvas.toBlob((blob) => {
