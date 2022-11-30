@@ -52,8 +52,8 @@ Page.Tabs.addObserver(OUTPUT_FORMAT_CONTROL, (values: string[]) => {
 });
 
 let outputPreview: boolean;
-const OUPUT_PREVIEW_CONTROL = "output-preview-id";
-Page.Checkbox.addObserver(OUPUT_PREVIEW_CONTROL, (checked: boolean) => {
+const OUTPUT_PREVIEW_CONTROL = "output-preview-id";
+Page.Checkbox.addObserver(OUTPUT_PREVIEW_CONTROL, (checked: boolean) => {
     outputPreview = checked;
     callOnChangeObservers();
 });
