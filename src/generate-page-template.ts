@@ -57,7 +57,7 @@ const data = {
             ]
         },
         {
-            title: "Ouput",
+            title: "Output",
             controls: [
                 {
                     type: Demopage.supportedControls.Tabs,
