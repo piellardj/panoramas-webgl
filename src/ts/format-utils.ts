@@ -39,14 +39,14 @@ class FormatUtils {
     }
 
     private static mayBeSkybox(image: HTMLImageElement): boolean {
-        const context = document.createElement("canvas").getContext("2d");
+        const context = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
         context.canvas.width = 8;
         context.canvas.height = 6;
         context.drawImage(image, 0, 0, context.canvas.width, context.canvas.height);
 
         const testedPixels = [
-            {x: 0, y: 0}, {x: 5, y: 0}, {x: 6, y: 0}, {x: 7, y: 0},   // top
-            {x: 0, y: 5}, {x: 5, y: 5}, {x: 6, y: 5}, {x: 7, y: 5},  // bottom
+            { x: 0, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 },   // top
+            { x: 0, y: 5 }, { x: 5, y: 5 }, { x: 6, y: 5 }, { x: 7, y: 5 },  // bottom
         ];
 
         const reference = context.getImageData(testedPixels[0].x, testedPixels[0].y, 1, 1).data;
