@@ -10,6 +10,10 @@ const data = {
         "It supports skysphere, skybox and tiny planet formats, and can convert from one another."
     ],
     githubProjectName: "panoramas-webgl",
+    readme: {
+        filepath: path.join(__dirname, "..", "README.md"),
+        branchName: "master"
+    },
     additionalLinks: [],
     scriptFiles: [
         "script/main.min.js"
